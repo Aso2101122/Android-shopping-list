@@ -23,7 +23,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         sb.append("CREATE TABLE shopping_list(");
         sb.append("_id INTEGER PRIMARY KEY,");
         sb.append("item_name TEXT,");
-        sb.append("quantity INTEGER");
+        sb.append("quantity INTEGER,");
         sb.append("complete_flag INTEGER");
         sb.append(");");
         String sql = sb.toString();
