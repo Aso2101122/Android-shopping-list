@@ -21,7 +21,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //テーブル作成用SQL文字列の作成
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE shopping_list(");
-        sb.append("_id INTEGER PRIMARY KEY,");
+        sb.append("_id INTEGER PRIMARY KEY AUTOINCREMENT,");
         sb.append("item_name TEXT,");
         sb.append("quantity INTEGER,");
         sb.append("complete_flag INTEGER");

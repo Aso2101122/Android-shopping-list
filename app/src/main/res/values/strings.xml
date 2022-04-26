@@ -2,6 +2,7 @@
     <string name="app_name">Android-shopping-list</string>
     <string name="plain_text">アイテム名を入力</string>
     <string name="add_button">アイテムを追加</string>
+    <string name="unComplete_text">未購入</string>
     <string name="edit_button">編集</string>
     <string name="tv_item_unit">個</string>
 </resources>

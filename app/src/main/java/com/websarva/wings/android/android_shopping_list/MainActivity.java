@@ -72,8 +72,8 @@ public class MainActivity extends AppCompatActivity {
         //アイテム名と数と完了フラグを取得する
         while(cursor.moveToNext()){
             int idxItem_name = cursor.getColumnIndex("item_name");
-            int idxQuantity = cursor.getColumnIndex("item_name");
-            int idxComplete_flag = cursor.getColumnIndex("item_name");
+            int idxQuantity = cursor.getColumnIndex("quantity");
+            int idxComplete_flag = cursor.getColumnIndex("complete_flag");
             item.put("item_name", cursor.getString(idxItem_name));
             item.put("quantity", cursor.getString(idxQuantity));
             item.put("complete_flag", cursor.getString(idxComplete_flag));
@@ -94,23 +94,24 @@ public class MainActivity extends AppCompatActivity {
                 //アイテム名を取得する
                 EditText edItemName = findViewById(R.id.item_name_et);
                 String itemName = edItemName.getText().toString();
+                if(itemName != "") {
+                    //データベースヘルパーオブジェクトからデータベース接続オブジェクトを取得
+                    SQLiteDatabase db = _helper.getWritableDatabase();
+                    //インサート用SQL文字列の用意
+                    String sqlInsert = "INSERT INTO shopping_list (item_name, quantity, complete_flag) VALUES (?,1,0)";
+                    //SQL文字列をもとにプリペアドステートメントを取得
+                    SQLiteStatement stmt = db.compileStatement(sqlInsert);
+                    //変数のバインド
+                    stmt.bindString(1, itemName);
+                    //インサートSQLの実行
+                    stmt.executeInsert();
 
-                //データベースヘルパーオブジェクトからデータベース接続オブジェクトを取得
-                SQLiteDatabase db = _helper.getWritableDatabase();
-                //インサート用SQL文字列の用意
-                String sqlInsert = "INSERT INTO shopping_list (item_name, quantity, complete_flag) VALUES (?,1,0)";
-                //SQL文字列をもとにプリペアドステートメントを取得
-                SQLiteStatement stmt = db.compileStatement(sqlInsert);
-                //変数のバインド
-                stmt.bindString(1, itemName);
-                //インサートSQLの実行
-                stmt.executeInsert();
-
-                edItemName.setText("");
-                Toast.makeText(MainActivity.this, "アイテムを追加しました。", Toast.LENGTH_SHORT).show();
+                    edItemName.setText("");
+                    Toast.makeText(MainActivity.this, "アイテムを追加しました。", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
 
-    
+
 }
