@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -37,17 +38,25 @@ public class MainActivity extends AppCompatActivity {
         //アイテムを表示するListViewを取得
         _lvItem = findViewById(R.id.item_lv);
         //dbから買い物リストを取得
-        List<Map<String, Object>> _unCompleteList = getShoppingList();
+        _unCompleteList = getShoppingList();
         //SimpleAdapterを作成
         SimpleAdapter adapter = new SimpleAdapter(MainActivity.this, _unCompleteList, R.layout.row, FROM, TO);
         //アダプタの登録
         _lvItem.setAdapter(adapter);
-
+//        Log.d("tag",_unCompleteList.get(0).get("item_name").toString());
+//        Log.d("tag",_unCompleteList.get(1).get("item_name").toString());
+//        Log.d("tag",_unCompleteList.get(2).get("item_name").toString());
+//        Log.d("tag",_unCompleteList.get(3).get("item_name").toString());
 
         //追加ボタンオブジェクトを取得
         Button addBtn = findViewById(R.id.item_add_btn);
         //追加ボタンににリスナを設定
         addBtn.setOnClickListener(new btnClickListener());
+
+        //チェックボックスのリスナを設定
+        CheckBox chkBox = findViewById(R.id.cbCompleteRow);
+        //チェックボタンにリスナを設定
+
     }
 
     @Override
@@ -69,18 +78,30 @@ public class MainActivity extends AppCompatActivity {
         List<Map<String,Object>> itemList = new ArrayList<>();
         //マップオブジェクトの用意とitemListへのデータ登録
         Map<String, Object> item = new HashMap<>();
+        int idxItemName = 0;
+        int idxQuantity;
+        int idxComplete_flag;
         //アイテム名と数と完了フラグを取得する
         while(cursor.moveToNext()){
-            int idxItem_name = cursor.getColumnIndex("item_name");
-            int idxQuantity = cursor.getColumnIndex("quantity");
-            int idxComplete_flag = cursor.getColumnIndex("complete_flag");
-            item.put("item_name", cursor.getString(idxItem_name));
+            idxItemName = cursor.getColumnIndex("item_name");
+            idxQuantity = cursor.getColumnIndex("quantity");
+            idxComplete_flag = cursor.getColumnIndex("complete_flag");
+            item.put("item_name", cursor.getString(idxItemName));
             item.put("quantity", cursor.getString(idxQuantity));
             item.put("complete_flag", cursor.getString(idxComplete_flag));
             itemList.add(item);
+            Log.d("tag",cursor.getString(idxItemName));
+            //Mapを初期化
+            item = new HashMap<>();
         }
         cursor.close();
+        Log.d("tag",itemList.get(0).get("item_name").toString());
+        Log.d("tag",itemList.get(1).get("item_name").toString());
+        Log.d("tag",itemList.get(2).get("item_name").toString());
+        Log.d("tag",itemList.get(3).get("item_name").toString());
+        Log.d("tag",itemList.get(4).get("item_name").toString());
         return itemList;
+
     }
 
     //追加ボタンを押したときのリスナクラス
@@ -94,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                 //アイテム名を取得する
                 EditText edItemName = findViewById(R.id.item_name_et);
                 String itemName = edItemName.getText().toString();
-                if(itemName != "") {
+                if(itemName.length() >= 1) {
                     //データベースヘルパーオブジェクトからデータベース接続オブジェクトを取得
                     SQLiteDatabase db = _helper.getWritableDatabase();
                     //インサート用SQL文字列の用意
@@ -113,5 +134,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    //チェックボックスがオンになったときのリスナクラス
 }
