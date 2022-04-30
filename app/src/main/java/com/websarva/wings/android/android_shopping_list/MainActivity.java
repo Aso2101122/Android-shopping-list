@@ -2,17 +2,20 @@ package com.websarva.wings.android.android_shopping_list;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -25,9 +28,10 @@ public class MainActivity extends AppCompatActivity {
     //データベースヘルパーオブジェクト
     private DatabaseHelper _helper;
     private ListView _lvItem;
-    private List<Map<String, Object>> _unCompleteList;
+    private List<Item> _unCompleteList;
     private static final String[] FROM = {"item_name","quantity"};
     private static final int[] TO = {R.id.tvItemNameRow,R.id.tvQuantityRow};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,23 +43,31 @@ public class MainActivity extends AppCompatActivity {
         _lvItem = findViewById(R.id.item_lv);
         //dbから買い物リストを取得
         _unCompleteList = getShoppingList();
-        //SimpleAdapterを作成
-        SimpleAdapter adapter = new SimpleAdapter(MainActivity.this, _unCompleteList, R.layout.row, FROM, TO);
+        //MyAdapterを作成
+        ItemAdapter adapter = new ItemAdapter(MainActivity.this, R.layout.row, _unCompleteList);
         //アダプタの登録
         _lvItem.setAdapter(adapter);
-//        Log.d("tag",_unCompleteList.get(0).get("item_name").toString());
-//        Log.d("tag",_unCompleteList.get(1).get("item_name").toString());
-//        Log.d("tag",_unCompleteList.get(2).get("item_name").toString());
-//        Log.d("tag",_unCompleteList.get(3).get("item_name").toString());
 
         //追加ボタンオブジェクトを取得
         Button addBtn = findViewById(R.id.item_add_btn);
         //追加ボタンににリスナを設定
         addBtn.setOnClickListener(new btnClickListener());
 
-        //チェックボックスのリスナを設定
-        CheckBox chkBox = findViewById(R.id.cbCompleteRow);
-        //チェックボタンにリスナを設定
+        // リストがタップされた時のイベント
+        _lvItem.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                MainActivity.this.setTitle(String.valueOf(position)+"番目がクリックされました。");
+            }
+        });
+
+        //チェックボックスのリスナーを設定
+
+        //更新ボタンが押された時のリスナを設定
+        //追加ボタンオブジェクトを取得
+        Button updateBtn = findViewById(R.id.bt_reacquire);
+        //更新ボタンににリスナを設定
+        updateBtn.setOnClickListener(new reacquireClickListener());
 
     }
 
@@ -67,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //未完了の買い物リストデータを取得するメソッド
-    protected List<Map<String, Object>> getShoppingList(){
+    protected List<Item> getShoppingList(){
         //データベースヘルパーオブジェクトからデータベース接続オブジェクトを取得
         SQLiteDatabase db = _helper.getWritableDatabase();
         //検索SQL文字列の用意
@@ -75,33 +87,31 @@ public class MainActivity extends AppCompatActivity {
         //SQLを実行
         Cursor cursor = db.rawQuery(sql, null);
         //Adapterで使用するListオブジェクト
-        List<Map<String,Object>> itemList = new ArrayList<>();
-        //マップオブジェクトの用意とitemListへのデータ登録
-        Map<String, Object> item = new HashMap<>();
-        int idxItemName = 0;
-        int idxQuantity;
-        int idxComplete_flag;
-        //アイテム名と数と完了フラグを取得する
+        List<Item> itemList = new ArrayList<>();
+        //アイテムidとアイテム名と数と完了フラグを取得する
         while(cursor.moveToNext()){
-            idxItemName = cursor.getColumnIndex("item_name");
-            idxQuantity = cursor.getColumnIndex("quantity");
-            idxComplete_flag = cursor.getColumnIndex("complete_flag");
-            item.put("item_name", cursor.getString(idxItemName));
-            item.put("quantity", cursor.getString(idxQuantity));
-            item.put("complete_flag", cursor.getString(idxComplete_flag));
+            //カラムのインデックスの取得
+            int idxItemId = cursor.getColumnIndex("item_id");
+            int idxItemName = cursor.getColumnIndex("item_name");
+            int idxQuantity = cursor.getColumnIndex("quantity");
+            int idxComplete_flag = cursor.getColumnIndex("complete_flag");
+
+            // インデックスをもとにデータを取得
+            int itemId = cursor.getInt(idxItemId);
+            String  itemName = cursor.getString(idxItemName);
+            int itemQuantity = cursor.getInt(idxQuantity);
+            int itemCompleteFlag = cursor.getInt(idxComplete_flag);
+
+            // itemオブジェクトをインスタンス化して、データを格納する
+            Item item = new Item(itemId, itemName, itemQuantity, itemCompleteFlag);
+
+            //itemオブジェクトをListに格納する
             itemList.add(item);
+
             Log.d("tag",cursor.getString(idxItemName));
-            //Mapを初期化
-            item = new HashMap<>();
         }
         cursor.close();
-        Log.d("tag",itemList.get(0).get("item_name").toString());
-        Log.d("tag",itemList.get(1).get("item_name").toString());
-        Log.d("tag",itemList.get(2).get("item_name").toString());
-        Log.d("tag",itemList.get(3).get("item_name").toString());
-        Log.d("tag",itemList.get(4).get("item_name").toString());
         return itemList;
-
     }
 
     //追加ボタンを押したときのリスナクラス
@@ -129,10 +139,30 @@ public class MainActivity extends AppCompatActivity {
 
                     edItemName.setText("");
                     Toast.makeText(MainActivity.this, "アイテムを追加しました。", Toast.LENGTH_SHORT).show();
+
+                    //リストを再描画する
+                    List<Item> newItemList = getShoppingList();
+                    //ItemAdapterを作成
+                    ItemAdapter adapter = new ItemAdapter(MainActivity.this, R.layout.row, newItemList);
+                    //アダプタの登録
+                    _lvItem.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
                 }
             }
         }
     }
 
-    //チェックボックスがオンになったときのリスナクラス
+    //更新ボタンを押された時のリスナクラス
+    private class reacquireClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            List<Item> newItemList = getShoppingList();
+            //ItemAdapterを作成
+            ItemAdapter adapter = new ItemAdapter(MainActivity.this, R.layout.row, newItemList);
+            //アダプタの登録
+            _lvItem.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+            Log.d("tag", "リストを再取得");
+        }
+    }
 }
