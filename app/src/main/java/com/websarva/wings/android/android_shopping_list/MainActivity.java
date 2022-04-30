@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         //アイテムを表示するListViewを取得
         _lvItem = findViewById(R.id.item_lv);
         //dbから買い物リストを取得
-        _unCompleteList = getShoppingList();
+        _unCompleteList = getShoppingList(0);
         //MyAdapterを作成
         ItemAdapter adapter = new ItemAdapter(MainActivity.this, R.layout.row, _unCompleteList);
         //アダプタの登録
@@ -79,11 +79,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //未完了の買い物リストデータを取得するメソッド
-    protected List<Item> getShoppingList(){
+    protected List<Item> getShoppingList(int complete_flag){
         //データベースヘルパーオブジェクトからデータベース接続オブジェクトを取得
         SQLiteDatabase db = _helper.getWritableDatabase();
-        //検索SQL文字列の用意
-        String sql = "SELECT * FROM shopping_list WHERE complete_flag = 0";
+        String sql = "";
+        //引数complete_flagが0の時は未完了、1の時は完了したアイテムを取得するSQL文を用意する
+        if(complete_flag == 1){
+            //検索SQL文字列の用意
+            sql = "SELECT * FROM shopping_list WHERE complete_flag = 1 ORDER BY item_id desc";
+        }else{
+            //検索SQL文字列の用意
+            sql = "SELECT * FROM shopping_list WHERE complete_flag = 0  ORDER BY item_id desc";
+        }
+
         //SQLを実行
         Cursor cursor = db.rawQuery(sql, null);
         //Adapterで使用するListオブジェクト
@@ -138,10 +146,10 @@ public class MainActivity extends AppCompatActivity {
                     stmt.executeInsert();
 
                     edItemName.setText("");
-                    Toast.makeText(MainActivity.this, "アイテムを追加しました。", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, itemName +"を追加しました。", Toast.LENGTH_SHORT).show();
 
                     //リストを再描画する
-                    List<Item> newItemList = getShoppingList();
+                    List<Item> newItemList = getShoppingList(0);
                     //ItemAdapterを作成
                     ItemAdapter adapter = new ItemAdapter(MainActivity.this, R.layout.row, newItemList);
                     //アダプタの登録
@@ -156,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
     private class reacquireClickListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            List<Item> newItemList = getShoppingList();
+            List<Item> newItemList = getShoppingList(0);
             //ItemAdapterを作成
             ItemAdapter adapter = new ItemAdapter(MainActivity.this, R.layout.row, newItemList);
             //アダプタの登録
