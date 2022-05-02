@@ -54,7 +54,7 @@
         app:layout_constraintTop_toBottomOf="@+id/item_add_btn" />
 
     <ListView
-        android:id="@+id/item_lv"
+        android:id="@+id/item_unComplete_lv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -75,12 +75,12 @@
         android:layout_marginTop="16dp"
         android:text="@string/complete_text"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/item_lv" />
+        app:layout_constraintTop_toBottomOf="@+id/item_unComplete_lv" />
 
     <ListView
         android:id="@+id/item_complete_lv"
-        android:layout_width="407dp"
-        android:layout_height="48dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"

@@ -49,7 +49,7 @@ public class ItemAdapter extends ArrayAdapter {
 
     @Override
     public long getItemId(int position) {
-        //引数で指定された位置にあるアイテムののIDを返します
+        //引数で指定された位置にあるアイテムのIDを返します
         return itemList.get(position).getItemId();
     }
 
