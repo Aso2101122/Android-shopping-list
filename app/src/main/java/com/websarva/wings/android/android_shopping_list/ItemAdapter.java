@@ -110,7 +110,7 @@ public class ItemAdapter extends ArrayAdapter {
                 _helper = new DatabaseHelper(getContext());
                 //データベースヘルパーオブジェクトからデータベース接続オブジェクトを取得
                 SQLiteDatabase db = _helper.getWritableDatabase();
-                //インサート用SQL文字列の用意
+                //アップデート用SQL文字列の用意
                 String sqlUPDATE = "UPDATE shopping_list SET complete_flag = ? WHERE item_id = ?";
                 //SQL文字列をもとにプリペアドステートメントを取得
                 SQLiteStatement stmt = db.compileStatement(sqlUPDATE);
@@ -121,19 +121,11 @@ public class ItemAdapter extends ArrayAdapter {
                 stmt.executeUpdateDelete();
             }
         });
-//        btItemMinus.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(item.getItemQuantity() >= 1){
-//                    item.setItemQuantity(item.getItemQuantity() - 1);      //個数を減らしています
-//                }
-//                if(item.getItemQuantity() < 1){         //個数が1より小さい、つまり0個になったら-ボタンを押せなくします
-//                    btItemMinus.setEnabled(false);
-//                }
-//                tvItemQuantity.setText(String.valueOf(item.getItemQuantity()));
-//            }
-//        });
-
         return convertView;
     }
+
+
+
+
+
 }

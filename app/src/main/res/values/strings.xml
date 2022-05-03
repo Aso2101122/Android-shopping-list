@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Android-shopping-list</string>
+    <string name="app_name">買い物メモ</string>
     <string name="plain_text">アイテム名を入力</string>
     <string name="add_button">アイテムを追加</string>
     <string name="unComplete_text">未購入</string>

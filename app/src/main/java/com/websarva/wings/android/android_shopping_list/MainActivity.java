@@ -70,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d("tag",String.valueOf(position)+"番目がクリックされました。");
                 Intent intent = new Intent(MainActivity.this, ItemEditActivity.class);
+                //アイテムidをLong型から、intにキャストする
+                int putId = (int) id;
+
                 //アイテム名を取得
                 TextView tvItemName = view.findViewById(R.id.tvItemNameRow);
                 String itemName = tvItemName.getText().toString();
@@ -84,8 +87,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                 //データを格納
-                intent.putExtra("itemId",id);
-                intent.putExtra("itemName",itemName);
+                intent.putExtra("itemId", putId);
+                intent.putExtra("itemName", itemName);
                 intent.putExtra("itemQuantity", itemQuantity);
 
                 startActivity(intent);
@@ -99,12 +102,6 @@ public class MainActivity extends AppCompatActivity {
         Button updateBtn = findViewById(R.id.bt_reacquire);
         //更新ボタンににリスナを設定
         updateBtn.setOnClickListener(new reacquireClickListener());
-
-        //チェックボックスのリスナーを設定
-        //チェックボタンオブジェクトを取得
-//        Button checkbox = findViewById(R.id.cbCompleteRow);
-        //チェックボックスにリスナを設定
-//        checkbox.setOnClickListener(new checkboxClickListener());
     }
 
     @Override
@@ -137,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
             //カラムのインデックスの取得
             int idxItemId = cursor.getColumnIndex("item_id");
             int idxItemName = cursor.getColumnIndex("item_name");
-            int idxQuantity = cursor.getColumnIndex("quantity");
+            int idxQuantity = cursor.getColumnIndex("item_quantity");
             int idxComplete_flag = cursor.getColumnIndex("complete_flag");
 
             // インデックスをもとにデータを取得
@@ -173,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
                     //データベースヘルパーオブジェクトからデータベース接続オブジェクトを取得
                     SQLiteDatabase db = _helper.getWritableDatabase();
                     //インサート用SQL文字列の用意
-                    String sqlInsert = "INSERT INTO shopping_list (item_name, quantity, complete_flag) VALUES (?,1,0)";
+                    String sqlInsert = "INSERT INTO shopping_list (item_name, item_quantity, complete_flag) VALUES (?,1,0)";
                     //SQL文字列をもとにプリペアドステートメントを取得
                     SQLiteStatement stmt = db.compileStatement(sqlInsert);
                     //変数のバインド
