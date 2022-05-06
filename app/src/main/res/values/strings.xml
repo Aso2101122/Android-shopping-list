@@ -11,4 +11,8 @@
     <string name="tv_item_quantity">アイテム数</string>
     <string name="bt_save">保存</string>
     <string name="bt_back">戻る</string>
+    <string name="dialog_title">アイテムの削除</string>
+    <string name="dialog_msg">を削除しますか</string>
+    <string name="dialog_btn_ok">削除する</string>
+    <string name="dialog_btn_ng">キャンセル</string>
 </resources>

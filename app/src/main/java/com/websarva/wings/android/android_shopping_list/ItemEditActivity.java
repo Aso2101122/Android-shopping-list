@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.util.List;
@@ -54,6 +55,9 @@ public class ItemEditActivity extends AppCompatActivity {
 
         Button btSave = findViewById(R.id.bt_save);
         btSave.setOnClickListener(new saveBtnClickListener());
+
+        ImageButton btDelete = findViewById(R.id.imgbt_delete);
+        btDelete.setOnClickListener(new deleteBtnClickListener());
     }
 
 
@@ -105,6 +109,30 @@ public class ItemEditActivity extends AppCompatActivity {
                 Log.d("tag","個数Updateが実行");
             }
             finish();
+        }
+    }
+
+    //削除ボタンを押したときのクリックリスナー
+    private class deleteBtnClickListener implements View.OnClickListener{
+        @Override
+        public void onClick(View view){
+            //アイテム名を取得する
+            String itemName = _etItemName.getText().toString();
+
+            //ダイアログを表示
+            Log.d("tag" , "Deleteが押された");
+
+            //注文確認ダイアログフラグメントオブジェクトを生成
+            DeleteConfirmDialogFragment dialogFragment = new DeleteConfirmDialogFragment();
+
+            // 渡す値をセット
+            Bundle args = new Bundle();
+            args.putInt("item_id", _itemId);
+            args.putString("item_name", _itemName);
+            dialogFragment.setArguments(args);
+
+            //ダイアログ表示
+            dialogFragment.show(getSupportFragmentManager(), "DeleteDialogFragment");
         }
     }
 }
